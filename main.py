@@ -2,24 +2,38 @@ import json
 import string
 
 from typing import Dict
+
+
 # 1 - Digitar o nome completo, telefone de contato e e-mail da pessoa
 # 2 - Adicionar elementos a uma lista organizada
 # 3 - Ler a lista item a item
 # 4 - Adicionar os itens da lista aos contatos do google
 
 
-def remove_punctuation(inputed_string: str) -> str:
-    return inputed_string.translate(str.maketrans('', '', string.punctuation))
+def clean_number(number_to_clean: str) -> str:
+    items_removed = """ ,.+-=()_;:|\\/´`~^[]{}*&¨%$#@!?'"><
+    AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZzÇç"""
+    cleaned_number = number_to_clean
+    for x in range(len(items_removed)):
+        cleaned_number = cleaned_number.replace(items_removed[x], '')
+    return cleaned_number
+
+
+def clean_name(name_to_clean: str) -> str:
+    items_removed = """0123456789-_=+()[]{}:?<>,.;/\\|'"!@#$%¨&*"""
+    cleaned_name = name_to_clean
+    for x in range(len(items_removed)):
+        cleaned_name = cleaned_name.replace(items_removed[x], '')
+    return cleaned_name
 
 
 def adicionar_lista(nome: str,
                     telefone: str,
                     email: str) -> Dict[str, str]:
-
     dicionario = {
-        "Nome": nome,
-        "Telefone": remove_punctuation(telefone.replace(" ", "")),
-        "Email": email
+        "Nome": clean_name(nome),
+        "Telefone": clean_number(telefone),
+        "Email": email.replace(' ', '')
     }
 
     return dicionario
@@ -42,26 +56,21 @@ def salvar_json(dicionario: Dict[str, str]) -> None:
 
 
 def loop():
+    nome = None
+    telefone = None
+    email = None
     while True:
         decidir = input('Para parar digite "0", para continuar, precione qualquer outra tecla.')
         if decidir == "0":
             break
 
-        nome = input("Digite um nome para o contato: ")
-
         while not nome:
             nome = input("Digite um nome para o contato: ")
-
-        telefone = input("Digite um telefone: ")
-
-        while not telefone.isdigit():
-            print("O valor digitado nao era um numero")
-            telefone = input("Digite um telefone: ")
+            nome = clean_name(nome)
 
         while not telefone:
             telefone = input("Digite um telefone: ")
-
-        email = input("Digite um email para o contato: ")
+            telefone = clean_number(telefone)
 
         while not email:
             email = input("Digite um email para o contato: ")
